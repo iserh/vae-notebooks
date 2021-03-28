@@ -1,0 +1,7 @@
+/datasets
+/plots
+/notebooks/plots
+.vscode
+**/*.pdf
+**/__pycache__
+**/.ipynb_checkpoints
