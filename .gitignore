@@ -1,6 +1,7 @@
 /datasets
-/plots
-/notebooks/plots
+**/plots
+**/*checkpoints
+**/lightning_logs
 .vscode
 **/*.pdf
 **/__pycache__

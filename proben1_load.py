@@ -51,7 +51,6 @@ def card():
     np.savetxt(target_path / "card_data.txt", X)
     np.savetxt(target_path / "card_labels.txt", Y)
 
-
 def diabetes():
     # load the train data
     with open(source_path / "diabetes" / "pima-indians-diabetes.data", "r") as data_file:
@@ -74,7 +73,6 @@ def diabetes():
     target_path.mkdir(exist_ok=True, parents=True)
     np.savetxt(target_path / "diabetes_data.txt", X)
     np.savetxt(target_path / "diabetes_labels.txt", Y)
-
 
 def thyroid():
     # load the train data
@@ -151,12 +149,123 @@ def geneN():
     np.savetxt(target_path / "geneN_data.txt", X)
     np.savetxt(target_path / "geneN_labels.txt", Y)
 
+def glass():
+    # load the train data
+    with open(source_path / "glass" / "glass.data", "r") as data_file:
+        df: pd.DataFrame = pd.read_csv(data_file, sep=",", header=None, skipinitialspace=True)
+
+    # delete NaN columns
+    df = df.dropna(axis=1)
+
+    # split data and labels
+    X, Y = df.iloc[:, :10].to_numpy(), df.iloc[:, 10].to_numpy() - 1
+    
+    print(X.shape)
+    print(Y.shape)
+    
+    # normalize the data with MinMaxScaler
+    min_max_scaler = preprocessing.MinMaxScaler()
+    X = min_max_scaler.fit_transform(X)
+
+    # temporary remove label 3
+    X = X[Y != 3]
+    Y = Y[Y != 3]
+    Y[Y > 3] = Y[Y > 3] - 1
+
+    # save data as txt
+    target_path.mkdir(exist_ok=True, parents=True)
+    np.savetxt(target_path / "glass_data.txt", X)
+    np.savetxt(target_path / "glass_labels.txt", Y)
+
+def horse():
+    # load the train data
+    with open(source_path / "horse" / "horse-colic.data", "r") as data_file:
+        df: pd.DataFrame = pd.read_csv(data_file, delim_whitespace=True, header=None)
+    
+    # load the train data
+    with open(source_path / "horse" / "horse-colic.test", "r") as data_file:
+        df = pd.concat([df, pd.read_csv(data_file, delim_whitespace=True, header=None)])
+
+    # delete NaN columns
+    df = df.dropna(axis=1)
+
+    # replace ? with 0
+    df = df.replace(to_replace="?", value=0)
+
+    # convert all columns to float type
+    df = df.apply(pd.to_numeric, errors="coerce")
+
+    # delete NaN values
+    df = df.dropna(axis=0)
+
+    # split data and labels
+    X, Y = df.iloc[:, :27].to_numpy(), df.iloc[:, 27].to_numpy() - 1
+    
+    print(X.shape)
+    print(Y.shape)
+
+    # normalize the data with MinMaxScaler
+    min_max_scaler = preprocessing.MinMaxScaler()
+    X = min_max_scaler.fit_transform(X)
+
+    # save data as txt
+    target_path.mkdir(exist_ok=True, parents=True)
+    np.savetxt(target_path / "horse-colic_data.txt", X)
+    np.savetxt(target_path / "horse-colic_labels.txt", Y)
+
+def soybean():
+    # load the train data
+    with open(source_path / "soybean" / "soybean-large.data", "r") as data_file:
+        df: pd.DataFrame = pd.read_csv(data_file, delimiter=",", header=None)
+    
+    # load the train data
+    with open(source_path / "soybean" / "soybean-large.test", "r") as data_file:
+        df = pd.concat([df, pd.read_csv(data_file, delimiter=",", header=None)])
+
+    # delete NaN columns
+    df = df.dropna(axis=1)
+
+    # replace ? with 0
+    df = df.replace(to_replace="?", value=0)
+
+    # convert all columns to float type
+    df.iloc[:, 1:] = df.iloc[:, 1:].apply(pd.to_numeric, errors="coerce")
+
+    # delete NaN values
+    df = df.dropna(axis=0)
+
+    # set category type for label column
+    df.iloc[:, 0] = df.iloc[:, 0].astype("category")
+    df.iloc[:, 0] = df.iloc[:, 0].cat.codes
+
+    # split data and labels
+    X, Y = df.iloc[:, 1:].to_numpy(), df.iloc[:, 0].to_numpy()
+    
+    print(X.shape)
+    print(Y.shape)
+
+    # normalize the data with MinMaxScaler
+    min_max_scaler = preprocessing.MinMaxScaler()
+    X = min_max_scaler.fit_transform(X)
+
+    # temporary remove first label
+
+    X = X[Y != 0]
+    Y = Y[Y != 0] - 1
+
+    # save data as txt
+    target_path.mkdir(exist_ok=True, parents=True)
+    np.savetxt(target_path / "soybean_data.txt", X)
+    np.savetxt(target_path / "soybean_labels.txt", Y)
 
 datasets = {
     "card": card,
     "thyroid": thyroid,
     "diabetes": diabetes,
     "geneN": geneN,
+    "glass": glass,
+    "horse-colic": horse,
+    "soybean": soybean,
 }
 
 if __name__ == "__main__":
